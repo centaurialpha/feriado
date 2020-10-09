@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+from datetime import datetime
+
+import requests
+# Configurable
+HOLIDAY_STR = 'Feriado'
+COLOR = '#FFAB04'
+
+URL = 'https://nolaborables.com.ar/api/v2/feriados/2020'
+MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+MAP_MESES = {i: mes for i, mes in zip(range(1, 13), MESES)}
+
+
+def next_holiday(holidays):
+    now = datetime.now()
+    holiday_dates = []
+
+    for holiday in holidays:
+        date = datetime(now.year, holiday['mes'], holiday['dia'])
+        holiday_dates.append(date)
+
+    for holiday in sorted(holiday_dates):
+        if holiday < now:
+            continue
+        return holiday
+
+
+if __name__ == '__main__':
+    try:
+        request = requests.get(URL)
+    except Exception:
+        text = f'%{{F{"#f00"}}} Connection error'
+    else:
+        feriado = next_holiday(request.json())
+        month = MAP_MESES[feriado.month]
+        text = f'{HOLIDAY_STR}: %{{F{COLOR}}} {feriado.day} {month}'
+
+    print(text)
