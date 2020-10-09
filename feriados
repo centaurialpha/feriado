@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
+import argparse
 from datetime import datetime
 
 import requests
-# Configurable
-HOLIDAY_STR = 'Feriado'
-COLOR = '#FFAB04'
 
 URL = 'https://nolaborables.com.ar/api/v2/feriados/2020'
 MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
@@ -25,7 +23,13 @@ def next_holiday(holidays):
         return holiday
 
 
-if __name__ == '__main__':
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--color', type=str, default='ffab04')
+    parser.add_argument('-l', '--label', type=str, default='Feriado')
+    args = parser.parse_args()
+
+    color = f'#{args.color}'
     try:
         request = requests.get(URL)
     except Exception:
@@ -33,6 +37,10 @@ if __name__ == '__main__':
     else:
         feriado = next_holiday(request.json())
         month = MAP_MESES[feriado.month]
-        text = f'{HOLIDAY_STR}: %{{F{COLOR}}} {feriado.day} {month}'
+        text = f'{args.label}: %{{F{color}}} {feriado.day} {month}'
 
     print(text)
+
+
+if __name__ == '__main__':
+    main()
