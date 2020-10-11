@@ -18,7 +18,7 @@ def next_holiday(holidays):
         holiday_dates.append(date)
 
     for holiday in sorted(holiday_dates):
-        if holiday < now:
+        if holiday <= now:
             continue
         return holiday
 
