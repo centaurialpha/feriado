@@ -14,8 +14,8 @@ Add custom script module in polybar config.
 
 ```
 [module/feriados]
-type = custom/script  -c 00ff00 -l Próximo feriado
-exec = ~/.scripts/feriados
+type = custom/script  
+exec = ~/.scripts/feriados -c 00ff00 -l Próximo feriado
 interval = 43200   # update each 12 hours
 ```
 
