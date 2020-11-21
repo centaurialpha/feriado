@@ -1,26 +1,31 @@
 #!/usr/bin/env python3
 import argparse
+import webbrowser
+from collections import namedtuple
 from datetime import datetime
 
 import requests
 
-URL = 'https://nolaborables.com.ar/api/v2/feriados/2020'
+NOW = datetime.now()
+URL = f'https://nolaborables.com.ar/api/v2/feriados/{NOW.year}'
 MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
 MAP_MESES = {i: mes for i, mes in zip(range(1, 13), MESES)}
 
 
-def next_holiday(holidays):
-    now = datetime.now()
-    holiday_dates = []
+def iter_holidays(json_data):
+    Feriado = namedtuple('Feriado', 'dt info')
 
-    for holiday in holidays:
-        date = datetime(now.year, holiday['mes'], holiday['dia'])
-        holiday_dates.append(date)
+    for each_data in json_data:
+        feriado_dt = datetime(NOW.year, each_data['mes'], each_data['dia'])
+        feriado_obj = Feriado(dt=feriado_dt, info=each_data['info'])
+        yield feriado_obj
 
-    for holiday in sorted(holiday_dates):
-        if holiday <= now:
+
+def next_holiday(json_data):
+    for feriado in iter_holidays(json_data):
+        if feriado.dt <= NOW:
             continue
-        return holiday
+        return feriado
 
 
 def main():
@@ -39,6 +44,12 @@ def main():
         default='Feriado',
         help='Label text (default=%(default)s)'
     )
+    parser.add_argument(
+        '-i',
+        '--info',
+        action='store_true',
+        help='Show info about feriado'
+    )
     args = parser.parse_args()
 
     color = f'#{args.color}'
@@ -47,11 +58,17 @@ def main():
     except Exception:
         text = f'%{{F{"#f00"}}} Connection error'
     else:
-        feriado = next_holiday(request.json())
-        month = MAP_MESES[feriado.month]
-        text = f'{args.label}: %{{F{color}}} {feriado.day} {month}'
+        json_data = request.json()
+        feriado_obj = next_holiday(json_data)
 
-    print(text)
+        if args.info:
+            webbrowser.open_new_tab(feriado_obj.info)
+            return
+        month = MAP_MESES[feriado_obj.dt.month]
+
+        text = f'{args.label}: %{{F{color}}} {feriado_obj.dt.day} {month}'
+
+        print(text)
 
 
 if __name__ == '__main__':
