@@ -12,7 +12,7 @@ MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', '
 MAP_MESES = {i: mes for i, mes in zip(range(1, 13), MESES)}
 
 
-def iter_holidays(json_data):
+def iter_feriados(json_data):
     Feriado = namedtuple('Feriado', 'dt info')
 
     for each_data in json_data:
@@ -21,8 +21,8 @@ def iter_holidays(json_data):
         yield feriado_obj
 
 
-def next_holiday(json_data):
-    for feriado in iter_holidays(json_data):
+def next_feriado(json_data):
+    for feriado in iter_feriados(json_data):
         if feriado.dt <= NOW:
             continue
         return feriado
@@ -59,7 +59,7 @@ def main():
         text = f'%{{F{"#f00"}}} Connection error'
     else:
         json_data = request.json()
-        feriado_obj = next_holiday(json_data)
+        feriado_obj = next_feriado(json_data)
 
         if args.info:
             webbrowser.open_new_tab(feriado_obj.info)
