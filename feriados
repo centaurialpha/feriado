@@ -10,15 +10,19 @@ NOW = datetime.now()
 URL = f'https://nolaborables.com.ar/api/v2/feriados/{NOW.year}'
 MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
 MAP_MESES = {i: mes for i, mes in zip(range(1, 13), MESES)}
+Feriado = namedtuple('Feriado', 'dt info')
 
 
 def iter_feriados(json_data):
-    Feriado = namedtuple('Feriado', 'dt info')
-
     for each_data in json_data:
-        feriado_dt = datetime(NOW.year, each_data['mes'], each_data['dia'])
-        feriado_obj = Feriado(dt=feriado_dt, info=each_data['info'])
+        feriado_obj = get_feriado_obj(each_data)
         yield feriado_obj
+
+
+def get_feriado_obj(json_data):
+    feriado_dt = datetime(NOW.year, json_data['mes'], json_data['dia'])
+    feriado_obj = Feriado(dt=feriado_dt, info=json_data['info'])
+    return feriado_obj
 
 
 def next_feriado(json_data):
@@ -28,7 +32,7 @@ def next_feriado(json_data):
         return feriado
 
 
-def main():
+def get_cli_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '-c',
@@ -50,7 +54,11 @@ def main():
         action='store_true',
         help='Show info about feriado'
     )
-    args = parser.parse_args()
+    return parser
+
+
+def main():
+    args = get_cli_parser().parse_args()
 
     color = f'#{args.color}'
     try:
@@ -60,14 +68,16 @@ def main():
     else:
         json_data = request.json()
         feriado_obj = next_feriado(json_data)
+        if feriado_obj is None:
+            # Año nuevo :)
+            feriado_obj = get_feriado_obj(json_data[0])
 
         if args.info:
             webbrowser.open_new_tab(feriado_obj.info)
             return
+
         month = MAP_MESES[feriado_obj.dt.month]
-
         text = f'{args.label}: %{{F{color}}} {feriado_obj.dt.day} {month}'
-
         print(text)
 
 
