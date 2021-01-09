@@ -12,6 +12,7 @@ MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', '
 MAP_MESES = {i: mes for i, mes in zip(range(1, 13), MESES)}
 Feriado = namedtuple('Feriado', 'dt info')
 
+print("JEJEJEJEEJ")
 
 def iter_feriados(json_data):
     for each_data in json_data:
