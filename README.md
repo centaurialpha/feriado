@@ -15,19 +15,20 @@ Add custom script module in polybar config.
 ```
 [module/feriados]
 type = custom/script
-exec = ~/.scripts/feriados -c 00ff00 -l Próximo feriado
+exec = $HOME/.scripts/feriados -f
 interval = 43200   # update each 12 hours
-click-left = ~/.scripts/feriados --info
+click-left = $HOME/.scripts/feriados -i
+click-right = dunstify $($HOME/.scripts/feriados -m)
 ```
 
 ### Options
 ```
-usage: feriados [-h] [-c COLOR] [-l LABEL]
+usage: feriados [-h] [-f] [-i] [--open-info] [-m]
 
 optional arguments:
-  -h, --help            show this help message and exit
-  -c COLOR, --color COLOR
-                        Text color (default=ffab04)
-  -l LABEL, --label LABEL
-                        Label text (default=Feriado)
+  -h, --help    show this help message and exit
+  -f, --fecha   Muestra la fecha del feriado
+  -i, --info    Muestra la URL a la información sobre el feriado
+  --open-info   Abre la URL de la info en el navegador
+  -m, --motivo  Muestra el motivo del feriado
 ```
