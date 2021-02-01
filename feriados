@@ -10,7 +10,7 @@ NOW = datetime.now()
 URL = f'https://nolaborables.com.ar/api/v2/feriados/{NOW.year}'
 MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
 MAP_MESES = {i: mes for i, mes in zip(range(1, 13), MESES)}
-Feriado = namedtuple('Feriado', 'dt info')
+Feriado = namedtuple('Feriado', 'dt info motivo tipo')
 
 
 def iter_feriados(json_data):
@@ -21,7 +21,12 @@ def iter_feriados(json_data):
 
 def get_feriado_obj(json_data):
     feriado_dt = datetime(NOW.year, json_data['mes'], json_data['dia'])
-    feriado_obj = Feriado(dt=feriado_dt, info=json_data['info'])
+    feriado_obj = Feriado(
+        dt=feriado_dt,
+        info=json_data['info'],
+        motivo=json_data['motivo'],
+        tipo=json_data['tipo']
+    )
     return feriado_obj
 
 
@@ -35,24 +40,27 @@ def next_feriado(json_data):
 def get_cli_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '-c',
-        '--color',
-        type=str,
-        default='ffab04',
-        help='Text color (default=%(default)s)'
-    )
-    parser.add_argument(
-        '-l',
-        '--label',
-        type=str,
-        default='Feriado',
-        help='Label text (default=%(default)s)'
+        '-f',
+        '--fecha',
+        action='store_true',
+        help='Muestra la fecha del feriado'
     )
     parser.add_argument(
         '-i',
         '--info',
         action='store_true',
-        help='Show info about feriado'
+        help='Muestra la URL a la información sobre el feriado'
+    ),
+    parser.add_argument(
+        '--open-info',
+        action='store_true',
+        help='Abre la URL de la info en el navegador'
+    )
+    parser.add_argument(
+        '-m',
+        '--motivo',
+        action='store_true',
+        help='Muestra el motivo del feriado'
     )
     return parser
 
@@ -60,11 +68,10 @@ def get_cli_parser():
 def main():
     args = get_cli_parser().parse_args()
 
-    color = f'#{args.color}'
     try:
         request = requests.get(URL)
     except Exception:
-        text = f'%{{F{"#f00"}}} Connection error'
+        print("Connection error")
     else:
         json_data = request.json()
         feriado_obj = next_feriado(json_data)
@@ -72,13 +79,25 @@ def main():
             # Año nuevo :)
             feriado_obj = get_feriado_obj(json_data[0])
 
-        if args.info:
-            webbrowser.open_new_tab(feriado_obj.info)
-            return
-
         month = MAP_MESES[feriado_obj.dt.month]
-        text = f'{args.label}: %{{F{color}}} {feriado_obj.dt.day} {month}'
-        print(text)
+
+        if args.fecha:
+            print(f"{feriado_obj.dt.day} {month}")
+        elif args.info:
+            print(f"{feriado_obj.info}")
+        elif args.open_info:
+            webbrowser.open_new_tab(feriado_obj.info)
+        elif args.motivo:
+            print(f"{feriado_obj.motivo}")
+
+        else:
+            text_template = (
+                f"Próximo feriado: {feriado_obj.dt.day} {month}\n"
+                f"Motivo: {feriado_obj.motivo}\n"
+                f"Tipo: {feriado_obj.tipo}\n"
+                f"Más información: {feriado_obj.info}"
+            )
+            print(text_template)
 
 
 if __name__ == '__main__':
