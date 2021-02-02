@@ -1,4 +1,4 @@
-## feriados
+## feriado
 Python script for [polybar](https://github.com/polybar/polybar) that shows next holiday in Argentina.
 
 ![](screenshot.png)
