@@ -13,17 +13,17 @@ Theme from [polybar-themes](https://github.com/adi1090x/polybar-themes#-polybar-
 Add custom script module in polybar config.
 
 ```
-[module/feriados]
+[module/feriado]
 type = custom/script
-exec = $HOME/.scripts/feriados -f
+exec = $HOME/.scripts/feriado -f
 interval = 43200   # update each 12 hours
-click-left = $HOME/.scripts/feriados -i
-click-right = dunstify $($HOME/.scripts/feriados -m)
+click-left = $HOME/.scripts/feriado -i
+click-right = dunstify $($HOME/.scripts/feriado -m)
 ```
 
 ### Options
 ```
-usage: feriados [-h] [-f] [-i] [--open-info] [-m]
+usage: feriado [-h] [-f] [-i] [--open-info] [-m]
 
 optional arguments:
   -h, --help    show this help message and exit
