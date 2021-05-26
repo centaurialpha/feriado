@@ -3,6 +3,13 @@ Show next holiday information in Argentina. It can be used as a "module" in Poly
 
 ![](screenshot.png)
 
+### Installation
+```
+$ git clone https://github.com/centaurialpha/feriado
+$ cd feriado
+$ pip install .
+```
+
 ### Polybar
 ![](polybar.png)
 
