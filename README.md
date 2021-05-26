@@ -1,15 +1,12 @@
 ## feriado
-Python script for [polybar](https://github.com/polybar/polybar) that shows next holiday in Argentina.
+Show next holiday information in Argentina. It can be used as a "module" in Polybar or Qtile.
 
 ![](screenshot.png)
 
-### My polybar
+### Polybar
 ![](polybar.png)
 
 
-Theme from [polybar-themes](https://github.com/adi1090x/polybar-themes#-polybar-12).
-
-### Install
 Add custom script module in polybar config.
 
 ```
@@ -20,6 +17,8 @@ interval = 43200   # update each 12 hours
 click-left = $HOME/.scripts/feriado -i
 click-right = dunstify $($HOME/.scripts/feriado -m)
 ```
+
+Theme from [polybar-themes](https://github.com/adi1090x/polybar-themes#-polybar-12).
 
 ### Options
 ```
