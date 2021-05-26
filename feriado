@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
+import json
+import urllib.request
 import argparse
 import webbrowser
 from collections import namedtuple
 from datetime import datetime
-
-import requests
 
 NOW = datetime.now()
 URL = f'https://nolaborables.com.ar/api/v2/feriados/{NOW.year}'
@@ -69,11 +69,11 @@ def main():
     args = get_cli_parser().parse_args()
 
     try:
-        request = requests.get(URL)
+        response = urllib.request.urlopen(URL)
     except Exception:
         print("Connection error")
     else:
-        json_data = request.json()
+        json_data = json.loads(response.read())
         feriado_obj = next_feriado(json_data)
         if feriado_obj is None:
             # Año nuevo :)
